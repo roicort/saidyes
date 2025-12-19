@@ -1,7 +1,12 @@
 ---
-const eventDate = "2026-06-21T21:00:00Z";
-const eventLabel = "Wedding Weekend Countdown";
-const eventLocation = "Mexico City • La Casa Azul";
+import { getEventData } from "../data/eventData";
+
+const { countdown } = getEventData();
+const eventDate = countdown.target;
+const eventLabel = countdown.label;
+const eventHeading = countdown.heading;
+const eventMessage = countdown.message;
+const eventLocation = countdown.location;
 ---
 
 <section
@@ -25,15 +30,14 @@ const eventLocation = "Mexico City • La Casa Azul";
             class="font-display text-[clamp(2.5rem,6vw,4.5rem)] uppercase leading-tight"
             style="color: var(--color-primary);"
         >
-            Countdown to "We Do"
+            {eventHeading}
         </h2>
 
         <p
             class="max-w-2xl text-base sm:text-lg"
             style="color: var(--color-text); opacity: 0.75;"
         >
-            Every sunrise brings us closer to the moment we gather together.
-            Save the date and get ready for an unforgettable celebration.
+            {eventMessage}
         </p>
 
         <div

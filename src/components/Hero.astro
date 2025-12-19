@@ -1,3 +1,8 @@
+---
+import { getEventData } from "../data/eventData";
+const { hero } = getEventData();
+---
+
 <section
     id="hero"
     class="hero relative overflow-hidden [&_.section__inner]:max-w-none [&_.section__inner]:p-0"
@@ -17,23 +22,21 @@
                     class="text-xs uppercase tracking-[0.65em]"
                     style="color: var(--color-secondary); opacity: 0.7;"
                 >
-                    The wedding of
+                    {hero.tagline}
                 </p>
                 <h1
                     class="font-display text-[clamp(3.5rem,8vw,6.5rem)] uppercase leading-[0.88] tracking-tight drop-shadow-md"
                     id="hero-heading"
+                    data-hero-title={hero.title}
                     style="color: var(--color-background);"
                 >
-                    said yes!
+                    {hero.title}
                 </h1>
                 <p
                     class="max-w-2xl text-base leading-relaxed md:text-lg"
                     style="color: var(--color-secondary); opacity: 0.9;"
                 >
-                    An editorial soirée in the heart of the city — bold florals,
-                    late-night vinyl, and a guest list filled with our favorite
-                    people. Come for the vows, stay for the midnight espresso
-                    martinis.
+                    {hero.description}
                 </p>
             </div>
 
@@ -42,19 +45,19 @@
                     class="text-xs uppercase tracking-[0.45em]"
                     style="color: var(--color-secondary); opacity: 0.7;"
                 >
-                    Saturday
+                    {hero.weekday}
                 </p>
                 <p
                     class="font-display text-4xl uppercase tracking-[0.2em]"
                     style="color: var(--color-background);"
                 >
-                    21 · 06 · 2026
+                    {hero.dateDisplay}
                 </p>
                 <p
                     class="mt-4 text-sm font-semibold uppercase tracking-[0.35em]"
                     style="color: var(--color-secondary); opacity: 0.7;"
                 >
-                    Mexico City • La Casa Azul
+                    {hero.location}
                 </p>
             </div>
         </div>
@@ -66,14 +69,20 @@
     import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin";
     gsap.registerPlugin(ScrambleTextPlugin);
 
-    gsap.to(document.querySelector("#hero-heading"), {
-        scrambleText: {
-            text: "said yes!",
-            revealDelay: 0.2,
-            tweenLength: true,
-        },
-        ease: "power2.inOut",
-        overwrite: "auto",
-        duration: 1,
+    requestAnimationFrame(() => {
+        const heading = document.querySelector("#hero-heading");
+        if (!heading) return;
+        const targetText =
+            heading.dataset.heroTitle ?? heading.textContent ?? "";
+        gsap.to(heading, {
+            scrambleText: {
+                text: targetText,
+                revealDelay: 0.2,
+                tweenLength: true,
+            },
+            ease: "power2.inOut",
+            overwrite: "auto",
+            duration: 1,
+        });
     });
 </script>

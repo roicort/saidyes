@@ -1,14 +1,32 @@
 ---
 import { Image } from "astro:assets";
-import heroImage from "../assets/wedshots/leonardo-miranda-unsplash.jpg";
+import { getEventData } from "../data/eventData";
 
-const story = `
-We met on a crisp autumn afternoon, when a simple conversation blossomed into an inseparable friendship.
-Over time, that friendship grew into love, and together we've shared adventures, dreams, and challenges.
-Today, we celebrate not only our love, but also the family and friends who have joined us on this journey.
-`;
+const { story } = getEventData();
+const highlights = story.highlights ?? [];
+const imageAlt = story.imageAlt ?? "Our story together";
 
-const imageAlt = "Our story together";
+const storyImageModules = import.meta.glob("../assets/**/*", {
+    eager: true,
+    import: "default",
+}) as Record<string, ImageMetadata>;
+
+const resolveStoryImage = (filename?: string) => {
+    if (!filename) return null;
+    const normalized = filename.replace(/^\.\?\//, "").replace(/^assets\//, "");
+    const match = Object.entries(storyImageModules).find(([path]) => {
+        const withoutPrefix = path.replace("../assets/", "");
+        return (
+            withoutPrefix === normalized ||
+            withoutPrefix.endsWith(`/${normalized}`) ||
+            path.endsWith(`/${normalized}`)
+        );
+    });
+
+    return match?.[1] ?? null;
+};
+
+const storyImage = resolveStoryImage(story.imageAsset) ?? null;
 ---
 
 <section
@@ -23,43 +41,35 @@ const imageAlt = "Our story together";
                 class="text-sm uppercase tracking-[0.35em] font-(--font-sans)"
                 style="color: var(--color-primary); opacity: 0.7;"
             >
-                Chapter One
+                {story.chapterLabel}
             </p>
             <h2
                 class="text-4xl sm:text-5xl tracking-tight font-(--font-display)"
                 style="color: var(--color-primary);"
             >
-                Our Story
+                {story.heading}
             </h2>
             <p
                 class="text-lg leading-relaxed whitespace-pre-line font-(--font-sans)"
                 style="color: var(--color-primary); opacity: 0.8;"
             >
-                {story}
+                {story.body}
             </p>
 
             <div
                 class="mt-6 flex flex-wrap gap-3 text-sm font-(--font-sans)"
                 style="color: var(--color-primary); opacity: 0.7;"
             >
-                <span
-                    class="inline-flex items-center gap-2 rounded-full border px-4 py-2"
-                    style="border-color: var(--color-text-dark);"
-                >
-                    💌 From friends to soulmates
-                </span>
-                <span
-                    class="inline-flex items-center gap-2 rounded-full border px-4 py-2"
-                    style="border-color: var(--color-text-dark);"
-                >
-                    ✈️ Adventures across continents
-                </span>
-                <span
-                    class="inline-flex items-center gap-2 rounded-full border px-4 py-2"
-                    style="border-color: var(--color-text-dark);"
-                >
-                    💍 Engaged under autumn skies
-                </span>
+                {
+                    highlights.map((highlight) => (
+                        <span
+                            class="inline-flex items-center gap-2 rounded-full border px-4 py-2"
+                            style="border-color: var(--color-text-dark);"
+                        >
+                            {highlight}
+                        </span>
+                    ))
+                }
             </div>
         </div>
 
@@ -67,7 +77,7 @@ const imageAlt = "Our story together";
             <div class="relative">
                 <div class="relative rounded-4xl border p-4 backdrop-blur">
                     <Image
-                        src={heroImage}
+                        src={storyImage}
                         alt={imageAlt}
                         class="h-full w-full rounded-3xl object-cover"
                         loading="lazy"
